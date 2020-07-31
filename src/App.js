@@ -32,14 +32,16 @@ function App() {
   }
 
   const handleCellClick = (i, j) => {
-    const newGrid = produce(grid, (gridCopy) => {
-      if (grid[i][j] === 0) {
-        gridCopy[i][j] = 1;
-      } else {
-        gridCopy[i][j] = 0;
-      }
-    });
-    setGrid(newGrid);
+    if (!isRunning) {
+      const newGrid = produce(grid, (gridCopy) => {
+        if (grid[i][j] === 0) {
+          gridCopy[i][j] = 1;
+        } else {
+          gridCopy[i][j] = 0;
+        }
+      });
+      setGrid(newGrid);
+    }
   };
 
   const toggleRunning = () => {
@@ -105,6 +107,7 @@ function App() {
       );
     }
     setGrid(rows);
+    setNumGens(1);
   }
 
   return (
@@ -157,6 +160,24 @@ function App() {
         </button>
         <button onClick={generateRandomGrid}>Random</button>
         <p>Generations: {numGens}</p>
+        <p style={{ color: '#74EE15' }}>
+          The Game of Life is a 'cellular automaton' invented by Cambridge
+          mathematician John Conway in 1970. The board contains of cells which
+          will live, die or multiply, depending on the rules. Depending on the
+          initial layout of the grid, the cells may form various patterns as the
+          game advances.
+        </p>
+        <h2>The Rules</h2>
+        <p style={{ color: '#01FFFF' }}>
+          If a cell is alive: If it has only 0-1 alive neighbors, it dies,
+          representing underpopulation. If it has 2-3 alive neighbors, it lives
+          on to the next generation. If it has more than 3 alive neighbors, it
+          dies, representing overpopulation.
+        </p>
+        <p style={{ color: '#F000FF' }}>
+          If a cell is dead: If it has exactly 3 alive neighbors, it becomes a
+          live cell, representing reproduction. Otherwise, it remains dead.
+        </p>
       </div>
     </div>
   );
