@@ -1,24 +1,156 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useCallback, useRef } from 'react';
+import produce from 'immer';
 import './App.css';
 
 function App() {
+  const numRows = 60;
+  const numCols = 80;
+  const cellSize = 20;
+  const timeInterval = 100;
+  const [grid, setGrid] = useState(generateEmptyGrid());
+  const [isRunning, setIsRunning] = useState(false);
+  const isRunningRef = useRef();
+  isRunningRef.current = isRunning;
+
+  const generationColors = {
+    1: '#FF0000',
+    3: '#FF1493',
+    5: '#FFA500',
+    7: '#F5D300',
+    9: '#74EE15',
+    11: '#01FFFF',
+    13: '#F000FF',
+  };
+
+  function generateEmptyGrid() {
+    const rows = [];
+    for (let i = 0; i < numRows; i++) {
+      rows.push(Array.from(Array(numCols), () => 0));
+    }
+    return rows;
+  }
+
+  const handleCellClick = (i, j) => {
+    const newGrid = produce(grid, (gridCopy) => {
+      if (grid[i][j] === 0) {
+        gridCopy[i][j] = 1;
+      } else {
+        gridCopy[i][j] = 0;
+      }
+    });
+    setGrid(newGrid);
+  };
+
+  const toggleRunning = () => {
+    setIsRunning(!isRunning);
+    if (!isRunning) {
+      isRunningRef.current = true;
+      runGame();
+    }
+  };
+
+  const runGame = useCallback(() => {
+    const neighborPositions = [
+      [0, 1],
+      [0, -1],
+      [1, 1],
+      [1, -1],
+      [-1, 1],
+      [-1, -1],
+      [1, 0],
+      [-1, 0],
+    ];
+    const calculateNeighbors = (grid, i, j) => {
+      let numNeighbors = 0;
+      neighborPositions.forEach(([x, y]) => {
+        const newX = x + i;
+        const newY = y + j;
+        if (newX >= 0 && newX < numRows && newY >= 0 && newY < numCols) {
+          if (grid[newX][newY] > 0) {
+            numNeighbors += 1;
+          }
+        }
+      });
+      return numNeighbors;
+    };
+    if (!isRunningRef.current) {
+      return;
+    }
+    setGrid((g) => {
+      return produce(g, (gridCopy) => {
+        for (let i = 0; i < numRows; i++) {
+          for (let j = 0; j < numCols; j++) {
+            const neighbors = calculateNeighbors(g, i, j);
+            if (neighbors < 2 || neighbors > 3) {
+              gridCopy[i][j] = 0;
+            } else if (g[i][j] > 0) {
+              gridCopy[i][j] = ((g[i][j] + 1) % 12) + 1;
+            } else if (g[i][j] === 0 && neighbors === 3) {
+              gridCopy[i][j] = 1;
+            }
+          }
+        }
+      });
+    });
+
+    setTimeout(runGame, timeInterval);
+  }, []);
+
+  function generateRandomGrid() {
+    const rows = [];
+    for (let i = 0; i < numRows; i++) {
+      rows.push(
+        Array.from(Array(numCols), () => (Math.random() > 0.85 ? 1 : 0))
+      );
+    }
+    setGrid(rows);
+  }
+
+  function consoleGrid() {
+    console.log(grid);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ display: 'flex' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${numCols}, ${cellSize - 2}px)`,
+          background: 'black',
+        }}
+      >
+        {grid.map((rows, i) =>
+          rows.map((cell, j) => (
+            <div
+              onClick={() => handleCellClick(i, j)}
+              key={`${i},${j}`}
+              style={{
+                width: 10,
+                height: 10,
+                backgroundColor:
+                  grid[i][j] > 0 ? generationColors[grid[i][j]] : '#0e1111',
+                border:
+                  grid[i][j] > 0
+                    ? `1px solid ${generationColors[grid[i][j]]}`
+                    : '1px solid #0e1111',
+                borderRadius: '50%',
+                marginBottom: '0.1em',
+                cursor: 'crosshair',
+                boxShadow:
+                  grid[i][j] > 0
+                    ? `2px 0px 5px 5px ${generationColors[grid[i][j]]}`
+                    : undefined,
+              }}
+            />
+          ))
+        )}
+      </div>
+      <div>
+        <button onClick={toggleRunning}>{isRunning ? 'Stop' : 'Start'}</button>
+        <button onClick={() => setGrid(generateEmptyGrid())}>Clear</button>
+        <button onClick={generateRandomGrid}>Random</button>
+        <button onClick={consoleGrid}>Console</button>
+      </div>
     </div>
   );
 }
