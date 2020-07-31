@@ -16,6 +16,8 @@ The board contains of cells which will live, die or multiply, depending on the r
 
 Depending on the initial layout of the grid, the cells may form various patterns as the game advances.
 
+In this version, the colors of the cells change, according to how long they have been alive.
+
 ## What problem does it solve?
 
 My project, specifically, can repeatedly update each cell in the grid, displaying the next generations of cells
