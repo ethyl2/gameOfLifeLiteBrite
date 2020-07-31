@@ -1,6 +1,51 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/49b0bb10-0b04-4b36-b604-aeab8620b4d8/deploy-status)](https://app.netlify.com/sites/litebrite-game-of-life/deploys)
 
-## Available Scripts
+# Conway's Game of Life
+
+## LiteBrite Style
+
+https://litebrite-game-of-life.netlify.app/
+
+This project is one of my implementations of Conway's Game of Life.
+
+## What is the Game of Life?
+
+It is a 'cellular automaton' invented by Cambridge mathematician John Conway in 1970.
+
+The board contains of cells which will live, die or multiply, depending on the rules.
+
+Depending on the initial layout of the grid, the cells may form various patterns as the game advances.
+
+## What problem does it solve?
+
+My project, specifically, can repeatedly update each cell in the grid, displaying the next generations of cells
+that result from the rules for the game.
+
+### The Rules
+
+#### If a cell is alive:
+
+- If it has only 0-1 alive neighbors, it dies, representing underpopulation.
+- If it has 2-3 alive neighbors, it lives on to the next generation.
+- If it has more than 3 alive neighbors, it dies, representing overpopulation.
+
+#### If a cell is dead:
+
+- If it has exactly 3 alive neighbors, it becomes a live cell, representing reproduction.
+- Otherwise, it remains dead.
+
+In a more general scope, cellular automata are used to solve problems involving biological and chemical simulatons. They are also used in certain computer processors and other numeric techniques.
+
+---
+
+## How to run this app locally:
+
+1. Fork and clone this repository.
+2. In terminal, run `npm i`.
+3. In terminal, run `npm start`.
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+## Other Available Scripts
 
 In the project directory, you can run:
 
