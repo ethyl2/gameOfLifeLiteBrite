@@ -11,6 +11,7 @@ function App() {
   const [isRunning, setIsRunning] = useState(false);
   const isRunningRef = useRef();
   isRunningRef.current = isRunning;
+  const [numGens, setNumGens] = useState(1);
 
   const generationColors = {
     1: '#FF0000',
@@ -92,7 +93,7 @@ function App() {
         }
       });
     });
-
+    setNumGens((prev) => prev + 1);
     setTimeout(runGame, timeInterval);
   }, []);
 
@@ -106,10 +107,6 @@ function App() {
     setGrid(rows);
   }
 
-  function consoleGrid() {
-    console.log(grid);
-  }
-
   return (
     <div style={{ display: 'flex' }}>
       <div
@@ -117,13 +114,15 @@ function App() {
           display: 'grid',
           gridTemplateColumns: `repeat(${numCols}, ${cellSize - 2}px)`,
           background: 'black',
+          border: '1px solid #2d2d2d',
+          margin: '1em',
         }}
       >
         {grid.map((rows, i) =>
           rows.map((cell, j) => (
             <div
               onClick={() => handleCellClick(i, j)}
-              key={`${i},${j}`}
+              key={`cell @[${i},${j}]`}
               style={{
                 width: 10,
                 height: 10,
@@ -145,11 +144,19 @@ function App() {
           ))
         )}
       </div>
-      <div>
+      <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
+        <h1>The Game of Life</h1>
         <button onClick={toggleRunning}>{isRunning ? 'Stop' : 'Start'}</button>
-        <button onClick={() => setGrid(generateEmptyGrid())}>Clear</button>
+        <button
+          onClick={() => {
+            setGrid(generateEmptyGrid());
+            setNumGens(1);
+          }}
+        >
+          Clear
+        </button>
         <button onClick={generateRandomGrid}>Random</button>
-        <button onClick={consoleGrid}>Console</button>
+        <p>Generations: {numGens}</p>
       </div>
     </div>
   );
